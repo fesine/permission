@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fesine.auth.po.SysLogPo">
+	<resultMap id="BaseResultMap" type="com.fesine.auth.po.SysLogPo">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="target_id" property="targetId" />
+		<result column="old_value" property="oldValue" />
+		<result column="new_value" property="newValue" />
+		<result column="operator" property="operator" />
+		<result column="operate_time" property="operateTime" />
+		<result column="operate_ip" property="operateIp" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<sql id="Table_Name">
+		sys_log
+	</sql>
+
+	<sql id="Base_Column">
+		id,
+		type,
+		target_id,
+		old_value,
+		new_value,
+		operator,
+		operate_time,
+		operate_ip,
+		status
+	</sql>
+
+	<sql id="Base_Where">
+		<trim suffixOverrides="AND">
+		<if test="id != null">
+			id= #{id}
+	           AND 
+		</if>
+		<if test="type != null">
+			type= #{type}
+	           AND 
+		</if>
+		<if test="targetId != null">
+			target_id= #{targetId}
+	           AND 
+		</if>
+		<if test="oldValue != null">
+			old_value= #{oldValue}
+	           AND 
+		</if>
+		<if test="newValue != null">
+			new_value= #{newValue}
+	           AND 
+		</if>
+		<if test="operator != null">
+			operator= #{operator}
+	           AND 
+		</if>
+		<if test="operateTime != null">
+			operate_time= #{operateTime}
+	           AND 
+		</if>
+		<if test="operateIp != null">
+			operate_ip= #{operateIp}
+	           AND 
+		</if>
+		<if test="status != null">
+			status= #{status}
+		</if>
+		</trim>
+	</sql>
+	
+    <sql id="Base_Select">
+			select
+		<include refid="Base_Column" />
+		from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</sql>
+
+
+
+	<insert id="insert" >
+		insert into
+		<include refid="Table_Name" />
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+	<if test="id != null">
+		id,
+	</if>
+	<if test="type != null">
+		type,
+	</if>
+	<if test="targetId != null">
+		target_id,
+	</if>
+	<if test="oldValue != null">
+		old_value,
+	</if>
+	<if test="newValue != null">
+		new_value,
+	</if>
+	<if test="operator != null">
+		operator,
+	</if>
+	<if test="operateTime != null">
+		operate_time,
+	</if>
+	<if test="operateIp != null">
+		operate_ip,
+	</if>
+	<if test="status != null">
+		status,
+	</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+	<if test="id != null">
+		#{id},
+	</if>
+	<if test="type != null">
+		#{type},
+	</if>
+	<if test="targetId != null">
+		#{targetId},
+	</if>
+	<if test="oldValue != null">
+		#{oldValue},
+	</if>
+	<if test="newValue != null">
+		#{newValue},
+	</if>
+	<if test="operator != null">
+		#{operator},
+	</if>
+	<if test="operateTime != null">
+		#{operateTime},
+	</if>
+	<if test="operateIp != null">
+		#{operateIp},
+	</if>
+	<if test="status != null">
+		#{status},
+	</if>
+		</trim>
+	</insert>
+
+	<update id="update" >
+		update
+		<include refid="Table_Name" />
+		<set>
+	<if test="id != null">
+		id=#{id},
+	</if>
+	<if test="type != null">
+		type=#{type},
+	</if>
+	<if test="targetId != null">
+		target_id=#{targetId},
+	</if>
+	<if test="oldValue != null">
+		old_value=#{oldValue},
+	</if>
+	<if test="newValue != null">
+		new_value=#{newValue},
+	</if>
+	<if test="operator != null">
+		operator=#{operator},
+	</if>
+	<if test="operateTime != null">
+		operate_time=#{operateTime},
+	</if>
+	<if test="operateIp != null">
+		operate_ip=#{operateIp},
+	</if>
+	<if test="status != null">
+		status=#{status},
+	</if>
+		</set>
+		<where>
+		<trim prefix="(" suffix=")" suffixOverrides="AND">
+			id=#{id}
+			AND
+		</trim>
+		</where>
+	</update>
+
+	<update id="updateByEntity" >
+		UPDATE
+		<include refid="Table_Name" />
+		<set>
+			<if test="s.type != null">
+                    type=#{s.type},
+			</if>
+			<if test="s.targetId != null">
+                    target_id=#{s.targetId},
+			</if>
+			<if test="s.oldValue != null">
+                    old_value=#{s.oldValue},
+			</if>
+			<if test="s.newValue != null">
+                    new_value=#{s.newValue},
+			</if>
+			<if test="s.operator != null">
+                    operator=#{s.operator},
+			</if>
+			<if test="s.operateTime != null">
+                    operate_time=#{s.operateTime},
+			</if>
+			<if test="s.operateIp != null">
+                    operate_ip=#{s.operateIp},
+			</if>
+			<if test="s.status != null">
+                    status=#{s.status}
+			</if>
+		</set>
+		<where> 
+			<trim prefix="(" suffix=")" suffixOverrides="AND">
+			<if test="w.id != null">
+                    id=#{w.id}
+                   AND 
+ 			</if>
+			<if test="w.type != null">
+                    type=#{w.type}
+                   AND 
+ 			</if>
+			<if test="w.targetId != null">
+                    target_id=#{w.targetId}
+                   AND 
+ 			</if>
+			<if test="w.oldValue != null">
+                    old_value=#{w.oldValue}
+                   AND 
+ 			</if>
+			<if test="w.newValue != null">
+                    new_value=#{w.newValue}
+                   AND 
+ 			</if>
+			<if test="w.operator != null">
+                    operator=#{w.operator}
+                   AND 
+ 			</if>
+			<if test="w.operateTime != null">
+                    operate_time=#{w.operateTime}
+                   AND 
+ 			</if>
+			<if test="w.operateIp != null">
+                    operate_ip=#{w.operateIp}
+                   AND 
+ 			</if>
+			<if test="w.status != null">
+                    status=#{w.status}
+ 			</if>
+			</trim>
+		</where>
+	</update>
+
+	<delete id="delete" >
+		delete from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</delete>
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		select count(1) from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</select>
+
+	<select id="selectOne"  resultMap="BaseResultMap">
+	  <include refid="Base_Select" />
+	</select>
+
+	<select id="selectList"  resultMap="BaseResultMap">
+	    <include refid="Base_Select" />
+	</select>
+
+     <select id="selectForUpdate" resultMap="BaseResultMap" useCache="false">
+		 <include refid="Base_Select" />
+		for update
+	</select>
+	
+
+</mapper>

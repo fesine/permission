@@ -9,6 +9,7 @@
   <url>http://maven.apache.org</url>
   <properties>
     <springframework.version>4.3.10.RELEASE</springframework.version>
+    <fesine.version>1.0-SNAPSHOT</fesine.version>
   </properties>
   <dependencies>
     <dependency>
@@ -81,6 +82,59 @@
       <version>2.5.3</version>
     </dependency>
 
+    <!--logback-->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+
+    <!--自定义服务jar-->
+    <dependency>
+      <groupId>com.fesine</groupId>
+      <artifactId>fesine-commons</artifactId>
+      <version>${fesine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fesine</groupId>
+      <artifactId>fesine-dao-api</artifactId>
+      <version>${fesine.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fesine</groupId>
+      <artifactId>fesine-dao-mybatis</artifactId>
+      <version>${fesine.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
   <build>
     <finalName>permission</finalName>

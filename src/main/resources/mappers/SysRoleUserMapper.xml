@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fesine.auth.po.SysRoleUserPo">
+	<resultMap id="BaseResultMap" type="com.fesine.auth.po.SysRoleUserPo">
+		<id column="id" property="id" />
+		<result column="role_id" property="roleId" />
+		<result column="user_id" property="userId" />
+		<result column="operator" property="operator" />
+		<result column="operate_time" property="operateTime" />
+		<result column="operate_ip" property="operateIp" />
+	</resultMap>
+
+	<sql id="Table_Name">
+		sys_role_user
+	</sql>
+
+	<sql id="Base_Column">
+		id,
+		role_id,
+		user_id,
+		operator,
+		operate_time,
+		operate_ip
+	</sql>
+
+	<sql id="Base_Where">
+		<trim suffixOverrides="AND">
+		<if test="id != null">
+			id= #{id}
+	           AND 
+		</if>
+		<if test="roleId != null">
+			role_id= #{roleId}
+	           AND 
+		</if>
+		<if test="userId != null">
+			user_id= #{userId}
+	           AND 
+		</if>
+		<if test="operator != null">
+			operator= #{operator}
+	           AND 
+		</if>
+		<if test="operateTime != null">
+			operate_time= #{operateTime}
+	           AND 
+		</if>
+		<if test="operateIp != null">
+			operate_ip= #{operateIp}
+		</if>
+		</trim>
+	</sql>
+	
+    <sql id="Base_Select">
+			select
+		<include refid="Base_Column" />
+		from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</sql>
+
+
+
+	<insert id="insert" >
+		insert into
+		<include refid="Table_Name" />
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+	<if test="id != null">
+		id,
+	</if>
+	<if test="roleId != null">
+		role_id,
+	</if>
+	<if test="userId != null">
+		user_id,
+	</if>
+	<if test="operator != null">
+		operator,
+	</if>
+	<if test="operateTime != null">
+		operate_time,
+	</if>
+	<if test="operateIp != null">
+		operate_ip,
+	</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+	<if test="id != null">
+		#{id},
+	</if>
+	<if test="roleId != null">
+		#{roleId},
+	</if>
+	<if test="userId != null">
+		#{userId},
+	</if>
+	<if test="operator != null">
+		#{operator},
+	</if>
+	<if test="operateTime != null">
+		#{operateTime},
+	</if>
+	<if test="operateIp != null">
+		#{operateIp},
+	</if>
+		</trim>
+	</insert>
+
+	<update id="update" >
+		update
+		<include refid="Table_Name" />
+		<set>
+	<if test="id != null">
+		id=#{id},
+	</if>
+	<if test="roleId != null">
+		role_id=#{roleId},
+	</if>
+	<if test="userId != null">
+		user_id=#{userId},
+	</if>
+	<if test="operator != null">
+		operator=#{operator},
+	</if>
+	<if test="operateTime != null">
+		operate_time=#{operateTime},
+	</if>
+	<if test="operateIp != null">
+		operate_ip=#{operateIp},
+	</if>
+		</set>
+		<where>
+		<trim prefix="(" suffix=")" suffixOverrides="AND">
+			id=#{id}
+			AND
+		</trim>
+		</where>
+	</update>
+
+	<update id="updateByEntity" >
+		UPDATE
+		<include refid="Table_Name" />
+		<set>
+			<if test="s.roleId != null">
+                    role_id=#{s.roleId},
+			</if>
+			<if test="s.userId != null">
+                    user_id=#{s.userId},
+			</if>
+			<if test="s.operator != null">
+                    operator=#{s.operator},
+			</if>
+			<if test="s.operateTime != null">
+                    operate_time=#{s.operateTime},
+			</if>
+			<if test="s.operateIp != null">
+                    operate_ip=#{s.operateIp}
+			</if>
+		</set>
+		<where> 
+			<trim prefix="(" suffix=")" suffixOverrides="AND">
+			<if test="w.id != null">
+                    id=#{w.id}
+                   AND 
+ 			</if>
+			<if test="w.roleId != null">
+                    role_id=#{w.roleId}
+                   AND 
+ 			</if>
+			<if test="w.userId != null">
+                    user_id=#{w.userId}
+                   AND 
+ 			</if>
+			<if test="w.operator != null">
+                    operator=#{w.operator}
+                   AND 
+ 			</if>
+			<if test="w.operateTime != null">
+                    operate_time=#{w.operateTime}
+                   AND 
+ 			</if>
+			<if test="w.operateIp != null">
+                    operate_ip=#{w.operateIp}
+ 			</if>
+			</trim>
+		</where>
+	</update>
+
+	<delete id="delete" >
+		delete from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</delete>
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		select count(1) from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</select>
+
+	<select id="selectOne"  resultMap="BaseResultMap">
+	  <include refid="Base_Select" />
+	</select>
+
+	<select id="selectList"  resultMap="BaseResultMap">
+	    <include refid="Base_Select" />
+	</select>
+
+     <select id="selectForUpdate" resultMap="BaseResultMap" useCache="false">
+		 <include refid="Base_Select" />
+		for update
+	</select>
+	
+
+</mapper>
