@@ -9,13 +9,21 @@
     <context:annotation-config />
     <!--启动注解驱动的spring mvc功能，可以使用@Controller @Service @Component-->
     <mvc:annotation-driven/>
+    <mvc:interceptors>
+        <bean class="com.fesine.auth.common.HttpInterceptor"/>
+    </mvc:interceptors>
 
     <!--启动包扫描-->
     <context:component-scan base-package="com.fesine.auth.controller"/>
     <context:component-scan base-package="com.fesine.auth.service"/>
 
+    <!--上下文工具类-->
+    <bean class="com.fesine.auth.common.ApplicationContextHelper" lazy-init="false"/>
+
     <!--请求拦截处理-->
     <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />-->
+    <!--全局异常处理-->
+    <bean class="com.fesine.auth.common.SpringExceptionResolver"/>
     <!--视图展示处理-->
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
     <!--json数据处理-->
