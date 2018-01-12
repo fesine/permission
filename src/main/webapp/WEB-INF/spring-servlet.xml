@@ -17,6 +17,11 @@
     <context:component-scan base-package="com.fesine.auth.controller"/>
     <context:component-scan base-package="com.fesine.auth.service"/>
 
+    <!--添加允许访问静态资源-->
+    <mvc:resources mapping="/js/**" location="/js/" />
+    <mvc:resources mapping="/css/**" location="/css/" />
+    <mvc:resources mapping="/assets/**" location="/assets/" />
+    <mvc:resources mapping="/bootstrap3.3.5/**" location="/bootstrap3.3.5/" />
     <!--上下文工具类-->
     <bean class="com.fesine.auth.common.ApplicationContextHelper" lazy-init="false"/>
 
@@ -30,7 +35,7 @@
     <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
     <!--页面视图处理 路径不加classpath时默认在WEB-INF路径下-->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/views/"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 </beans>
