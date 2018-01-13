@@ -10,6 +10,7 @@
 <head>
     <title>部门管理</title>
     <jsp:include page="../../common/backend_common.jsp"/>
+    <jsp:include page="../../common/page.jsp"/>
 </head>
 <body class="no-skin" youdao="bind" style="background: white">
 <input id="gritter-light" checked="" type="checkbox" class="ace ace-switch ace-switch-5"/>
@@ -141,7 +142,7 @@
             </tr>
             <tr>
                 <td><label for="userMail">邮箱</label></td>
-                <td><input type="text" name="mail" id="userMail" value=""
+                <td><input type="text" name="email" id="userMail" value=""
                            class="text ui-widget-content ui-corner-all"></td>
             </tr>
             <tr>
@@ -192,6 +193,31 @@
 
 
 </script>
+<%--用户模板--%>
+<script id="userListTemplate" type="x-tmpl-mustache">
+{{#userList}}
+<tr role="row" class="user-name odd" data-id="{{id}}"><!--even -->
+    <td><a href="#" class="user-edit" data-id="{{id}}">{{username}}</a></td>
+    <td>{{showDeptName}}</td>
+    <td>{{email}}</td>
+    <td>{{telephone}}</td>
+    <td>{{#bold}}{{showStatus}}{{/bold}}</td> <!-- 此处套用函数对status做特殊处理 -->
+    <td>
+        <div class="hidden-sm hidden-xs action-buttons">
+            <a class="green user-edit" href="#" data-id="{{id}}">
+                <i class="ace-icon fa fa-pencil bigger-100"></i>
+            </a>
+            <a class="red user-acl" href="#" data-id="{{id}}">
+                <i class="ace-icon fa fa-flag bigger-100"></i>
+            </a>
+        </div>
+    </td>
+</tr>
+{{/userList}}
+
+
+
+</script>
 <%--实现递归树展示--%>
 <script type="application/javascript">
     // 使用jquery
@@ -200,12 +226,16 @@
         var deptList;
         //缓存部门树
         var deptMap = {};
+        //缓存用户信息
+        var userMap = {};
         var optionStr = "";
         var lastClickDeptId = -1;
         //通过id获取元素
         var deptListTemplate = $('#deptListTemplate').html();
         //通过Mustache渲染
         Mustache.parse(deptListTemplate);
+        var userListTemplate = $('#userListTemplate').html();
+        Mustache.parse(userListTemplate);
         loadDeptTree();
 
         function loadDeptTree() {
@@ -326,6 +356,190 @@
 
         function loadUserList(deptId) {
             //TODO:加载用户列表
+            var pageSize = $("#pageSize").val();
+            var url = "/sys/user/page.json?deptId=" + deptId;
+            var pageNo = $("#userPage .pageNo").val() || 1;
+            $.ajax({
+                url: url,
+                data: {
+                    pageSize: pageSize,
+                    pageNo: pageNo
+                },
+                success: function (result) {
+                    renderUserListAndPage(result, url);
+                }
+            });
+        }
+
+        function renderUserListAndPage(result, url) {
+            if (result.ret) {
+                if (result.data.total > 0) {
+                    var rendered = Mustache.render(userListTemplate, {
+                        userList: result.data.data,
+                        "showDeptName": function () {
+                            return deptMap[this.deptId].name;
+                        },
+                        "showStatus": function () {
+                            return this.status == 1 ? "有效" : (this.status == 0 ? "无效" : "删除")
+                        },
+                        "bold": function () {
+                            return function(text, render)
+                            {
+                                var status = render(text);
+                                if (status == "有效") {
+                                    return "<span class='label label-sm label-success'>有效</spna>";
+                                } else if (status == "无效") {
+                                    return "<span class='label label-sm label-warning'>无效</spna>";
+                                } else {
+                                    return "<span class='label'>删除</spna>";
+                                }
+                            }
+                        }
+                    });
+                    $("#userList").html(rendered);
+                    bindUserClick();
+                    //缓存用户信息
+                    $.each(result.data.data, function (i, user) {
+                        userMap[user.id] = user;
+                    })
+                } else {
+                    $("#userList").html('');
+                }
+                var pageSize = $("#pageSize").val();
+                var pageNo = $("#userPage .pageNo").val() || 1;
+                renderPage(url, result.data.total, pageNo, pageSize, result.data.total > 0 ? result.data.total : 0, "userPage",renderUserListAndPage);
+            }else {
+                showMessage("获取部门下用户列表", result.msg, false);
+            }
+
+        }
+
+        $(".user-add").click(function () {
+            //id选择器
+            $("#dialog-user-form").dialog({
+                model: true,
+                title: '新增用户',
+                open: function (event, ui) {
+                    //隐藏模态框自带的关闭按钮
+                    $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                    //生成层级部门下拉列表
+                    optionStr = "";
+                    recursiveRenderDeptSelect(deptList, 1);
+                    //重置输入框
+                    $("#userForm")[0].reset();
+                    $("#deptSelectId").html(optionStr);
+                },
+                buttons: {
+                    "添加": function (e) {
+                        //阻止默认方法
+                        e.preventDefault();
+                        //保存数据操作
+                        updateUser(true, function (data) {
+                            //关闭模态框
+                            $("#dialog-user-form").dialog("close");
+                            loadUserList(lastClickDeptId);
+                        }, function (data) {
+                            //提示错误信息
+                            showMessage("新增用户", data.msg, false);
+                        })
+                    },
+                    "取消": function () {
+                        $("#dialog-user-form").dialog("close");
+                    }
+                }
+            });
+        });
+
+        function updateUser(isCreated, successCallback, failCallback) {
+            $.ajax({
+                url: isCreated ? "/sys/user/save.json" : "/sys/user/update.json",
+                data: $("#userForm").serializeArray(),
+                type: "POST",
+                success: function (result) {
+                    if (result.ret) {
+                        loadDeptTree();
+                        if (successCallback) {
+                            successCallback(result);
+                        }
+                    } else {
+                        if (failCallback) {
+                            failCallback(result);
+                        }
+                    }
+                }
+            })
+        }
+
+        function bindUserClick() {
+            $(".user-delete").click(function (e) {
+                e.preventDefault();
+                //关闭冒泡事件
+                e.stopPropagation();
+                var userId = $(this).attr("data-id");
+                var username = $(this).attr("data-name");
+                if (confirm("确定要删除用户【" + username + "】吗？")) {
+                    //TODO:删除用户信息
+                    console.log("delete user:" + username);
+                }
+            });
+            $(".user-name").click(function (e) {
+                e.preventDefault();
+                //关闭冒泡事件
+                e.stopPropagation();
+                var userId = $(this).attr("data-id");
+                handleUserSelected(userId);
+
+            });
+
+            $(".user-edit").click(function (e) {
+                e.preventDefault();
+                //关闭冒泡事件
+                e.stopPropagation();
+                var userId = $(this).attr("data-id");
+                $("#dialog-user-form").dialog({
+                    model: true,
+                    title: '编辑用户',
+                    open: function (event, ui) {
+                        //隐藏模态框自带的关闭按钮
+                        $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                        //生成层级部门下拉列表
+                        optionStr = "";
+                        recursiveRenderDeptSelect(deptList, 1);
+                        //重置输入框
+                        $("#userForm")[0].reset();
+                        $("#deptSelectId").html(optionStr);
+                        $("#userId").val(userId);
+                        var targetUser = userMap[userId];
+                        if (targetUser) {
+                            $("#userId").val(targetUser.id);
+                            $("#deptSelectId").val(targetUser.deptId);
+                            $("#userName").val(targetUser.username);
+                            $("#userMail").val(targetUser.email);
+                            $("#userTelephone").val(targetUser.telephone);
+                            $("#userStatus").val(targetUser.status);
+                            $("#userRemark").val(targetUser.remark);
+                        }
+                    },
+                    buttons: {
+                        "更新": function (e) {
+                            //阻止默认方法
+                            e.preventDefault();
+                            //保存数据操作
+                            updateUser(false, function (data) {
+                                //关闭模态框
+                                $("#dialog-user-form").dialog("close");
+                                loadUserList(lastClickDeptId);
+                            }, function (data) {
+                                //提示错误信息
+                                showMessage("更新用户", data.msg, false);
+                            })
+                        },
+                        "取消": function () {
+                            $("#dialog-user-form").dialog("close");
+                        }
+                    }
+                });
+            });
 
         }
 

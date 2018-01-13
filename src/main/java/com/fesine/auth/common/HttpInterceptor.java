@@ -27,8 +27,10 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             handler) throws Exception {
         String url = request.getRequestURI().toString();
         Map paramMap = request.getParameterMap();
-        log.info("request start. url:{}, params:{}", url, JsonMapper.obj2String(paramMap));
-        request.setAttribute(START_TIME,System.currentTimeMillis());
+        if(url.endsWith(".page")|| url.endsWith(".json")){
+            log.info("request start. url:{}, params:{}", url, JsonMapper.obj2String(paramMap));
+            request.setAttribute(START_TIME,System.currentTimeMillis());
+        }
         return true;
     }
 
@@ -37,13 +39,17 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         //String url = request.getRequestURI().toString();
         //log.info("request finished. url:{}, cost:{}", url, System.currentTimeMillis()
         //        - (Long) request.getAttribute(START_TIME));
+        RequestHolder.remove();
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object
             handler, Exception ex) throws Exception {
         String url = request.getRequestURI().toString();
-        log.info("request completed. url:{}, cost:{}", url, System.currentTimeMillis()
-                - (Long)request.getAttribute(START_TIME));
+        if (url.endsWith(".page") || url.endsWith(".json")) {
+            log.info("request completed. url:{}, cost:{}", url, System.currentTimeMillis()
+                    - (Long)request.getAttribute(START_TIME));
+        }
+        RequestHolder.remove();
     }
 }

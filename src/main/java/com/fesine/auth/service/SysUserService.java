@@ -1,6 +1,9 @@
 package com.fesine.auth.service;
 
+import com.fesine.auth.beans.PageQuery;
+import com.fesine.auth.beans.PageResult;
 import com.fesine.auth.param.UserParam;
+import com.fesine.auth.po.SysUserPo;
 
 /**
  * @description: 用户管理服务接口
@@ -22,4 +25,14 @@ public interface SysUserService {
      * @param param
      */
     void update(UserParam param);
+
+    /**
+     * 根据关键字查询用户
+     * @param keyword
+     * @return
+     */
+    SysUserPo findByKeyword(String keyword);
+
+    PageResult<SysUserPo> getPageByDeptId(int deptId, PageQuery pageQuery);
+
 }

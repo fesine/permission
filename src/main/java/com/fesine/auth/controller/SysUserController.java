@@ -1,11 +1,15 @@
 package com.fesine.auth.controller;
 
+import com.fesine.auth.beans.PageQuery;
+import com.fesine.auth.beans.PageResult;
 import com.fesine.auth.common.JsonData;
 import com.fesine.auth.param.UserParam;
+import com.fesine.auth.po.SysUserPo;
 import com.fesine.auth.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,35 +28,42 @@ public class SysUserController {
     @Autowired
     private SysUserService userService;
 
-    @RequestMapping("user.page")
+    @RequestMapping("/user.page")
     public ModelAndView page() {
         return new ModelAndView("user");
     }
 
     /**
-     * 新增部门
+     * 新增用户
      *
      * @param param
      * @return
      */
-    @RequestMapping("save.json")
+    @RequestMapping("/save.json")
     @ResponseBody
-    public JsonData saveDept(UserParam param) {
+    public JsonData saveUser(UserParam param) {
         userService.save(param);
         return JsonData.success();
     }
 
 
     /**
-     * 更新部门
+     * 更新用户
      *
      * @param param
      * @return
      */
-    @RequestMapping("update.json")
+    @RequestMapping("/update.json")
     @ResponseBody
-    public JsonData updateDept(UserParam param) {
+    public JsonData updateUser(UserParam param) {
         userService.update(param);
         return JsonData.success();
+    }
+
+    @RequestMapping("/page.json")
+    @ResponseBody
+    public JsonData page(@RequestParam int deptId, PageQuery pageQuery) {
+        PageResult<SysUserPo> page = userService.getPageByDeptId(deptId, pageQuery);
+        return JsonData.success(page);
     }
 }

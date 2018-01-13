@@ -1,5 +1,6 @@
 package com.fesine.auth.service.impl;
 
+import com.fesine.auth.common.RequestHolder;
 import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.exception.ParamException;
 import com.fesine.auth.param.DeptParam;
@@ -44,7 +45,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         //计算level
         sysDeptPo.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
         //TODO
-        sysDeptPo.setOperator("system");
+        sysDeptPo.setOperator(RequestHolder.getCurrentUser().getUsername());
         sysDeptPo.setOperateIp("127.0.0.1");
         sysDeptPo.setOperateTime(new Date());
         daoService.insert(sysDeptPo);
@@ -70,7 +71,7 @@ public class SysDeptServiceImpl implements SysDeptService {
                 .build();
         //计算level
         after.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
-        after.setOperator("system-update");
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperateIp("127.0.0.1");
         after.setOperateTime(new Date());
         //执行更新操作
