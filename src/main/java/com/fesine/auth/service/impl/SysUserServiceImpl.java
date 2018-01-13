@@ -9,6 +9,7 @@ import com.fesine.auth.param.UserParam;
 import com.fesine.auth.po.SysUserPo;
 import com.fesine.auth.service.SysUserService;
 import com.fesine.auth.util.BeanValidator;
+import com.fesine.auth.util.IpUtil;
 import com.fesine.auth.util.MD5Util;
 import com.fesine.auth.util.PasswordUtil;
 import com.fesine.dao.model.QueryResult;
@@ -48,7 +49,7 @@ public class SysUserServiceImpl implements SysUserService {
                 .getTelephone()).email(param.getEmail()).deptId(param.getDeptId()).remark(param
                 .getRemark()).password(password).status(param.getStatus()).build();
         userPo.setOperator(RequestHolder.getCurrentUser().getUsername());
-        userPo.setOperateIp("127.0.0.1");
+        userPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         userPo.setOperateTime(new Date());
         //TODO 发送邮件
         daoService.insert(userPo);
@@ -74,7 +75,7 @@ public class SysUserServiceImpl implements SysUserService {
                         (param
                         .getRemark()).status(param.getStatus()).build();
         userPo.setOperator(RequestHolder.getCurrentUser().getUsername());
-        userPo.setOperateIp("127.0.0.1");
+        userPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         userPo.setOperateTime(new Date());
         daoService.update(userPo);
     }

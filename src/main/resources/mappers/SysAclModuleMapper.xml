@@ -301,6 +301,22 @@
 	    <include refid="Base_Select" />
 	</select>
 
+	<select id="countByNameAndParentId" parameterType="java.util.Map" resultType="int">
+		select count(1) from
+		<include refid="Table_Name"/>
+		<where>
+			<if test="parentId != null">
+				parent_id=#{parentId}
+				AND
+			</if>
+			name = #{name}
+			<if test="id != null">
+				AND
+				id !=#{id}
+			</if>
+		</where>
+	</select>
+
      <select id="selectForUpdate" resultMap="BaseResultMap" useCache="false">
 		 <include refid="Base_Select" />
 		for update

@@ -7,6 +7,7 @@ import com.fesine.auth.param.DeptParam;
 import com.fesine.auth.po.SysDeptPo;
 import com.fesine.auth.service.SysDeptService;
 import com.fesine.auth.util.BeanValidator;
+import com.fesine.auth.util.IpUtil;
 import com.fesine.auth.util.LevelUtil;
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,9 +45,8 @@ public class SysDeptServiceImpl implements SysDeptService {
                 .build();
         //计算level
         sysDeptPo.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
-        //TODO
         sysDeptPo.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysDeptPo.setOperateIp("127.0.0.1");
+        sysDeptPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysDeptPo.setOperateTime(new Date());
         daoService.insert(sysDeptPo);
 
@@ -72,7 +72,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         //计算level
         after.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
-        after.setOperateIp("127.0.0.1");
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         //执行更新操作
         updateWithChild(before, after);
