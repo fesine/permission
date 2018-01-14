@@ -36,7 +36,7 @@ public class SysAclModuleController {
     }
 
     /**
-     * 新增部门
+     * 新增权限模块
      *
      * @param param
      * @return
@@ -49,7 +49,7 @@ public class SysAclModuleController {
     }
 
     /**
-     * 更新部门
+     * 更新权限模块
      *
      * @param param
      * @return

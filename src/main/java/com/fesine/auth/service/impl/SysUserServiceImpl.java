@@ -12,6 +12,7 @@ import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
 import com.fesine.auth.util.MD5Util;
 import com.fesine.auth.util.PasswordUtil;
+import com.fesine.dao.model.Order;
 import com.fesine.dao.model.QueryResult;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +90,10 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public PageResult<SysUserPo> getPageByDeptId(int deptId, PageQuery pageQuery) {
+        BeanValidator.check(pageQuery);
         SysUserPo sysUserPo = new SysUserPo();
         sysUserPo.setDeptId(deptId);
+        sysUserPo.addOrderBy(Order.asc("name"));
         QueryResult<SysUserPo> queryResult = daoService.selectQueryResult(sysUserPo,
                 pageQuery.getPageNo(), pageQuery.getPageSize());
         PageResult<SysUserPo> pageResult = PageResult.<SysUserPo>builder().total(queryResult

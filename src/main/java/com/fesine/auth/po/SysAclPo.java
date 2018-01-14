@@ -1,7 +1,11 @@
 package com.fesine.auth.po;
+
 import com.fesine.dao.BasePo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
-import java.math.BigDecimal;
 /**
  * @description: sys_acl表对应的实体类
  * @author: Fesine
@@ -10,6 +14,9 @@ import java.math.BigDecimal;
  * @author: Fesine
  * @updateTime:2018/01/11
  */
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysAclPo extends BasePo {
 	private static final long serialVersionUID = 1L;
 	//alias

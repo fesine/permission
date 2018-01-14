@@ -349,6 +349,27 @@
 		 <include refid="Base_Select" />
 		for update
 	</select>
+
+	<select id="countByNameAndAclModuleId" parameterType="java.util.Map" resultType="int">
+		select count(1) from
+		<include refid="Table_Name"/>
+		<where>
+			<trim prefix="(" suffix=")" suffixOverrides="AND">
+				<if test="id != null">
+					id!=#{id}
+					AND
+				</if>
+				<if test="aclModuleId != null">
+					acl_module_id =#{aclModuleId}
+					AND
+				</if>
+				<if test="name != null">
+					name =#{name}
+					AND
+				</if>
+			</trim>
+		</where>
+	</select>
 	
 
 </mapper>

@@ -55,6 +55,7 @@ public class UserController {
             } else {
                 response.sendRedirect("/admin/index.page");
             }
+            return;
         }
 
         request.setAttribute("error", errMsg);
