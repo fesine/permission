@@ -1,5 +1,6 @@
 package com.fesine.auth.service;
 
+import com.fesine.auth.dto.AclModuleLevelDto;
 import com.fesine.auth.dto.DeptLevelDto;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface SysTreeService {
      * @return
      */
     List<DeptLevelDto> deptTree();
+
+
+    List<AclModuleLevelDto> aclModuleTree();
 }

@@ -355,7 +355,6 @@
         }
 
         function loadUserList(deptId) {
-            //TODO:加载用户列表
             var pageSize = $("#pageSize").val();
             var url = "/sys/user/page.json?deptId=" + deptId;
             var pageNo = $("#userPage .pageNo").val() || 1;
@@ -586,7 +585,7 @@
                     var blank = "";
                     if (level > 1) {
                         for (var j = 3; j <= level; j++) {
-                            blank = +"..";
+                            blank += "..";
                         }
                         blank += "ㄴ";
                     }

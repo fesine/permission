@@ -1,7 +1,9 @@
 package com.fesine.auth.service.impl;
 
 import com.fesine.auth.dao.IDaoService;
+import com.fesine.auth.dto.AclModuleLevelDto;
 import com.fesine.auth.dto.DeptLevelDto;
+import com.fesine.auth.po.SysAclModulePo;
 import com.fesine.auth.po.SysDeptPo;
 import com.fesine.auth.service.SysTreeService;
 import com.fesine.auth.util.LevelUtil;
@@ -41,6 +43,40 @@ public class SysTreeServiceImpl implements SysTreeService {
         return deptListToTree(dtoList);
     }
 
+    @Override
+    public List<AclModuleLevelDto> aclModuleTree() {
+        //获取所有权限模块信息
+        List<SysAclModulePo> aclModulePoList = daoService.selectList(new SysAclModulePo());
+        List<AclModuleLevelDto> dtoList = Lists.newArrayList();
+        for (SysAclModulePo sysAclModulePo : aclModulePoList) {
+            AclModuleLevelDto dto = AclModuleLevelDto.adapt(sysAclModulePo);
+            dtoList.add(dto);
+        }
+        return aclModuleListToTree(dtoList);
+    }
+
+    public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> aclModuleLevelList){
+        if (CollectionUtils.isEmpty(aclModuleLevelList)) {
+            return Lists.newArrayList();
+        }
+        //level --> List结构[aclModule1,aclModule2]
+        Multimap<String, AclModuleLevelDto> levelAclModuleMap = ArrayListMultimap.create();
+        List<AclModuleLevelDto> rootList = Lists.newArrayList();
+        for (AclModuleLevelDto dto : aclModuleLevelList) {
+            //相同level值，会将value转换成list
+            levelAclModuleMap.put(dto.getLevel(), dto);
+            //如果是顶级权限模块，加入到列表
+            if (LevelUtil.ROOT.equals(dto.getLevel())) {
+                rootList.add(dto);
+            }
+        }
+        //根权限模块按seq进行从小到大排序
+        Collections.sort(rootList, aclModuleSeqComparator);
+        //生成树操作
+        transformAclModuleTree(rootList, LevelUtil.ROOT, levelAclModuleMap);
+        return rootList;
+    }
+
     public List<DeptLevelDto> deptListToTree(List<DeptLevelDto> deptLevelList){
         if (CollectionUtils.isEmpty(deptLevelList)) {
             return Lists.newArrayList();
@@ -56,12 +92,30 @@ public class SysTreeServiceImpl implements SysTreeService {
                 rootList.add(dto);
             }
         }
-
         //根部门按seq进行从小到大排序
         Collections.sort(rootList, deptSeqComparator);
         //生成树操作
         transformDeptTree(rootList, LevelUtil.ROOT, levelDeptMap);
         return rootList;
+    }
+
+    public void transformAclModuleTree(List<AclModuleLevelDto> aclModuleLevelList, String level,
+                                  Multimap<String, AclModuleLevelDto> levelAclModuleMap) {
+        for (int i = 0; i < aclModuleLevelList.size(); i++) {
+            //遍历每层部门数据
+            AclModuleLevelDto aclModuleLevelDto = aclModuleLevelList.get(i);
+            //处理当前层级的数据
+            String nextLevel = LevelUtil.calculateLevel(level, aclModuleLevelDto.getId());
+            //处理下一层数据
+            List<AclModuleLevelDto> tempAclModuleList = (List<AclModuleLevelDto>) levelAclModuleMap.get(nextLevel);
+            if (CollectionUtils.isNotEmpty(tempAclModuleList)) {
+                //排序
+                Collections.sort(tempAclModuleList, aclModuleSeqComparator);
+                aclModuleLevelDto.setAclModuleList(tempAclModuleList);
+                //递归处理
+                transformAclModuleTree(tempAclModuleList, nextLevel, levelAclModuleMap);
+            }
+        }
     }
 
     public void transformDeptTree(List<DeptLevelDto> deptLevelList, String level,
@@ -88,6 +142,7 @@ public class SysTreeServiceImpl implements SysTreeService {
      */
 
     Comparator<DeptLevelDto> deptSeqComparator = Comparator.comparing(DeptLevelDto::getSeq);
+    Comparator<AclModuleLevelDto> aclModuleSeqComparator = Comparator.comparing(AclModuleLevelDto::getSeq);
 
             //(o1, o2) -> o1.getSeq().compareTo(o2.getSeq());
     //        new Comparator<DeptLevelDto>() {
