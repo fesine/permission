@@ -39,7 +39,7 @@ public class AclParam {
     /**
      * 请求的url，可以填正则表达式       db_column: url
      */
-    @Length(min = 2, max = 100, message = "权限点名称长度需要在2-100个字之间")
+    @Length(min = 2, max = 100, message = "权限点url需要在2-100个字之间")
     private String url;
     /**
      * 类型 1:菜单 2:按钮 3:其他       db_column: type

@@ -434,7 +434,7 @@ $(function () {
                     }
                 },
                 buttons: {
-                    "添加": function (e) {
+                    "更新": function (e) {
                         //阻止默认方法
                         e.preventDefault();
                         //保存数据操作
