@@ -303,6 +303,10 @@ $(function () {
                 //重置输入框
                 $("#aclModuleForm")[0].reset();
                 $("#parentId").html(optionStr);
+                //默认在选中的权限模块下新增
+                if (lastClickAclModuleId) {
+                    $("#parentId").val(lastClickAclModuleId);
+                }
             },
             buttons: {
                 "添加": function (e) {
@@ -550,6 +554,10 @@ $(function () {
                     //重置输入框
                     $("#aclForm")[0].reset();
                     $("#aclModuleSelectId").html(optionStr);
+                    //默认在选中的权限模块下新增
+                    if(lastClickAclModuleId){
+                        $("#aclModuleSelectId").val(lastClickAclModuleId);
+                    }
                 },
                 buttons: {
                     "添加": function (e) {

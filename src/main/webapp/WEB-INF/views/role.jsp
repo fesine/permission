@@ -262,6 +262,42 @@
         });
     });
 
+    function getTreeSelectedId() {
+        var treeObj = $.fn.zTree.getZTreeObj("roleAclTree");
+        debugger
+        var nodes = treeObj.getCheckedNodes(true);
+        var v = "";
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].id.startsWith(aclPrefix)) {
+                v += "," + nodes[i].dataId;
+            }
+        }
+        return v.length > 0 ? v.substring(1) : v;
+    }
+
+
+    $(".saveRoleAcl").click(function (e) {
+        e.preventDefault();
+        if(lastRoleId == -1) {
+            showMessage("保存角色与权限点的关系", "请在左侧选择需要操作的角色", false);
+            return;
+        }
+        $.ajax({
+            url:"/sys/role/changeAcls.json",
+            data:{
+                roleId:lastRoleId,
+                aclIds: getTreeSelectedId()
+            },
+            type:"POST",
+            success:function (result) {
+                if(result.ret) {
+                    showMessage("保存角色与权限点的关系","保存成功",false)
+                }else {
+                    showMessage("保存角色与权限点的关系", result.msg, false)
+                }
+            }
+        })
+    })
     function updateRole(isCreated, successCallback, failCallback) {
         $.ajax({
             url: isCreated ? "/sys/role/save.json" : "/sys/role/update.json",
@@ -372,17 +408,6 @@
             })
         }
 
-        function getTreeSelectedId() {
-            var treeObj = $.fn.zTree.getZTreeObj("roleAclTree");
-            var nodes = treeObj.getSelectedNodes(true);
-            var v = "";
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].id.startsWith(aclPrefix)) {
-                    v += "," + nodes[i].dataId;
-                }
-            }
-            return v.length > 0 ? v.substring(1) : v;
-        }
 
         function renderRoleTree(aclModuleList) {
             zTreeObj = [];

@@ -427,6 +427,7 @@
                     //重置输入框
                     $("#userForm")[0].reset();
                     $("#deptSelectId").html(optionStr);
+                    $("#deptSelectId").val(lastClickDeptId);
                 },
                 buttons: {
                     "添加": function (e) {
@@ -556,6 +557,7 @@
                     //重置输入框
                     $("#deptForm")[0].reset();
                     $("#parentId").html(optionStr);
+                    $("#parentId").val(lastClickDeptId);
                 },
                 buttons: {
                     "添加": function (e) {

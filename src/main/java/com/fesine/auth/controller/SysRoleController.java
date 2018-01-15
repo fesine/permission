@@ -3,8 +3,10 @@ package com.fesine.auth.controller;
 import com.fesine.auth.common.JsonData;
 import com.fesine.auth.param.RoleParam;
 import com.fesine.auth.po.SysRolePo;
+import com.fesine.auth.service.SysRoleAclService;
 import com.fesine.auth.service.SysRoleService;
 import com.fesine.auth.service.SysTreeService;
+import com.fesine.auth.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,9 @@ public class SysRoleController {
 
     @Autowired
     private SysTreeService treeService;
+
+    @Autowired
+    private SysRoleAclService roleAclService;
 
     @RequestMapping("role.page")
     public ModelAndView page() {
@@ -75,6 +80,15 @@ public class SysRoleController {
     @ResponseBody
     public JsonData roleTree(@RequestParam int roleId) {
         return JsonData.success(treeService.roleTree(roleId));
+    }
+
+    @RequestMapping(value = "/changeAcls.json",method = RequestMethod.POST)
+    @ResponseBody
+    public JsonData changeAcls(@RequestParam int roleId,
+                               @RequestParam(required = false,defaultValue = "") String aclIds) {
+        List<Integer> aclsList = StringUtil.splitToListInt(aclIds);
+        roleAclService.changeRoleAcls(roleId, aclsList);
+        return JsonData.success();
     }
 
 }
