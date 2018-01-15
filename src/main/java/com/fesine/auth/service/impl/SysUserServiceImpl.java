@@ -93,7 +93,7 @@ public class SysUserServiceImpl implements SysUserService {
         BeanValidator.check(pageQuery);
         SysUserPo sysUserPo = new SysUserPo();
         sysUserPo.setDeptId(deptId);
-        sysUserPo.addOrderBy(Order.asc("name"));
+        sysUserPo.addOrderBy(Order.asc("username"));
         QueryResult<SysUserPo> queryResult = daoService.selectQueryResult(sysUserPo,
                 pageQuery.getPageNo(), pageQuery.getPageSize());
         PageResult<SysUserPo> pageResult = PageResult.<SysUserPo>builder().total(queryResult

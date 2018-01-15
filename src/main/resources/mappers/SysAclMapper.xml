@@ -370,6 +370,17 @@
 			</trim>
 		</where>
 	</select>
+
+	<select id="getByIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column"/>
+		from
+		<include refid="Table_Name"/>
+		WHERE id in
+		<foreach collection="idList" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
 	
 
 </mapper>

@@ -217,6 +217,13 @@
 		 <include refid="Base_Select" />
 		for update
 	</select>
+
+	<select id="getRoleIdListByUserId" parameterType="java.util.Map" resultType="int">
+		SELECT role_id
+		<include refid="Table_Name"/>
+		WHERE
+		user_id = #{userId}
+	</select>
 	
 
 </mapper>

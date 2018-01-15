@@ -21,6 +21,16 @@ public interface SysTreeService {
      */
     List<DeptLevelDto> deptTree();
 
-
+    /**
+     * 生成权限模块树
+     * @return
+     */
     List<AclModuleLevelDto> aclModuleTree();
+
+    /**
+     * 根据角色id获取权限模块树
+     * @param roleId
+     * @return
+     */
+    List<AclModuleLevelDto> roleTree(int roleId);
 }

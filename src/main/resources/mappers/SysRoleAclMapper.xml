@@ -217,6 +217,16 @@
 		 <include refid="Base_Select" />
 		for update
 	</select>
-	
+
+
+	<select id="getAclIdListByRoleIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column"/>
+		FROM
+		<include refid="Table_Name"/>
+		WHERE role_id in
+		<foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+			#{roleId}
+		</foreach>
+	</select>
 
 </mapper>

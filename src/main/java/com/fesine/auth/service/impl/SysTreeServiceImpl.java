@@ -1,10 +1,13 @@
 package com.fesine.auth.service.impl;
 
 import com.fesine.auth.dao.IDaoService;
+import com.fesine.auth.dto.AclDto;
 import com.fesine.auth.dto.AclModuleLevelDto;
 import com.fesine.auth.dto.DeptLevelDto;
 import com.fesine.auth.po.SysAclModulePo;
+import com.fesine.auth.po.SysAclPo;
 import com.fesine.auth.po.SysDeptPo;
+import com.fesine.auth.service.SysCoreService;
 import com.fesine.auth.service.SysTreeService;
 import com.fesine.auth.util.LevelUtil;
 import com.google.common.collect.ArrayListMultimap;
@@ -14,9 +17,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @description: 将部门信息转换成树结构
@@ -30,6 +32,9 @@ import java.util.List;
 public class SysTreeServiceImpl implements SysTreeService {
     @Autowired
     private IDaoService daoService;
+
+    @Autowired
+    private SysCoreService sysCoreService;
 
     @Override
     public List<DeptLevelDto> deptTree() {
@@ -55,7 +60,67 @@ public class SysTreeServiceImpl implements SysTreeService {
         return aclModuleListToTree(dtoList);
     }
 
-    public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> aclModuleLevelList){
+    @Override
+    public List<AclModuleLevelDto> roleTree(int roleId) {
+        //1、当前用户已分配的权限点
+        List<SysAclPo> userAclList = sysCoreService.getCurrentUserAclList();
+        //2、当前角色分配的权限点
+        List<SysAclPo> roleAclList = sysCoreService.getRoleAclList(roleId);
+        //获取所有的aclList
+        List<SysAclPo> allList = daoService.selectList(new SysAclPo());
+        Set<Integer> userAclIdSet = userAclList.stream().map(sysAclPo -> sysAclPo.getId())
+                .collect(Collectors.toSet());
+        Set<Integer> roleAclIdSet = roleAclList.stream().map(sysAclPo -> sysAclPo.getId())
+                .collect(Collectors.toSet());
+        List<AclDto> aclDtoList = Lists.newArrayList();
+        for (SysAclPo sysAclPo : allList) {
+            AclDto aclDto = AclDto.adapt(sysAclPo);
+            if(userAclIdSet.contains(sysAclPo.getId())){
+                aclDto.setHasAcl(true);
+            }
+            if (roleAclIdSet.contains(sysAclPo.getId())) {
+                aclDto.setChecked(true);
+            }
+            aclDtoList.add(aclDto);
+        }
+
+        return aclListToTree(aclDtoList);
+    }
+
+    public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList){
+        if (CollectionUtils.isEmpty(aclDtoList)) {
+            return Lists.newArrayList();
+        }
+        List<AclModuleLevelDto> aclModuleLevelList = aclModuleTree();
+        Multimap<Integer, AclDto> moduleIdAclMap = ArrayListMultimap.create();
+        for (AclDto aclDto : aclDtoList) {
+            if (aclDto.getStatus() == 1) {
+                moduleIdAclMap.put(aclDto.getAclModuleId(), aclDto);
+            }
+        }
+        bindAclsWithOrder(aclModuleLevelList, moduleIdAclMap);
+        return aclModuleLevelList;
+    }
+
+    public void bindAclsWithOrder(List<AclModuleLevelDto> aclModuleLevelList, Multimap<Integer,
+            AclDto> moduleIdAclMap) {
+        if (CollectionUtils.isEmpty(aclModuleLevelList)) {
+            return;
+        }
+        for (AclModuleLevelDto dto : aclModuleLevelList) {
+            List<AclDto> aclDtoList = (List<AclDto>) moduleIdAclMap.get(dto.getId());
+            if (CollectionUtils.isNotEmpty(aclDtoList)) {
+                Collections.sort(aclDtoList, aclSeqComparator);
+                dto.setAclList(aclDtoList);
+            }
+            bindAclsWithOrder(dto.getAclModuleList(),moduleIdAclMap);
+        }
+
+    }
+
+
+
+    public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> aclModuleLevelList) {
         if (CollectionUtils.isEmpty(aclModuleLevelList)) {
             return Lists.newArrayList();
         }
@@ -77,7 +142,7 @@ public class SysTreeServiceImpl implements SysTreeService {
         return rootList;
     }
 
-    public List<DeptLevelDto> deptListToTree(List<DeptLevelDto> deptLevelList){
+    public List<DeptLevelDto> deptListToTree(List<DeptLevelDto> deptLevelList) {
         if (CollectionUtils.isEmpty(deptLevelList)) {
             return Lists.newArrayList();
         }
@@ -100,14 +165,15 @@ public class SysTreeServiceImpl implements SysTreeService {
     }
 
     public void transformAclModuleTree(List<AclModuleLevelDto> aclModuleLevelList, String level,
-                                  Multimap<String, AclModuleLevelDto> levelAclModuleMap) {
+                                       Multimap<String, AclModuleLevelDto> levelAclModuleMap) {
         for (int i = 0; i < aclModuleLevelList.size(); i++) {
             //遍历每层部门数据
             AclModuleLevelDto aclModuleLevelDto = aclModuleLevelList.get(i);
             //处理当前层级的数据
             String nextLevel = LevelUtil.calculateLevel(level, aclModuleLevelDto.getId());
             //处理下一层数据
-            List<AclModuleLevelDto> tempAclModuleList = (List<AclModuleLevelDto>) levelAclModuleMap.get(nextLevel);
+            List<AclModuleLevelDto> tempAclModuleList = (List<AclModuleLevelDto>)
+                    levelAclModuleMap.get(nextLevel);
             if (CollectionUtils.isNotEmpty(tempAclModuleList)) {
                 //排序
                 Collections.sort(tempAclModuleList, aclModuleSeqComparator);
@@ -142,9 +208,11 @@ public class SysTreeServiceImpl implements SysTreeService {
      */
 
     Comparator<DeptLevelDto> deptSeqComparator = Comparator.comparing(DeptLevelDto::getSeq);
-    Comparator<AclModuleLevelDto> aclModuleSeqComparator = Comparator.comparing(AclModuleLevelDto::getSeq);
+    Comparator<AclModuleLevelDto> aclModuleSeqComparator = Comparator.comparing
+            (AclModuleLevelDto::getSeq);
+    Comparator<AclDto> aclSeqComparator = Comparator.comparing(AclDto::getSeq);
 
-            //(o1, o2) -> o1.getSeq().compareTo(o2.getSeq());
+    //(o1, o2) -> o1.getSeq().compareTo(o2.getSeq());
     //        new Comparator<DeptLevelDto>() {
     //    @Override
     //    public int compare(DeptLevelDto o1, DeptLevelDto o2) {

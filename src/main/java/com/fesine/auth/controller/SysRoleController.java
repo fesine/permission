@@ -4,9 +4,12 @@ import com.fesine.auth.common.JsonData;
 import com.fesine.auth.param.RoleParam;
 import com.fesine.auth.po.SysRolePo;
 import com.fesine.auth.service.SysRoleService;
+import com.fesine.auth.service.SysTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,6 +29,9 @@ public class SysRoleController {
 
     @Autowired
     private SysRoleService roleService;
+
+    @Autowired
+    private SysTreeService treeService;
 
     @RequestMapping("role.page")
     public ModelAndView page() {
@@ -63,6 +69,12 @@ public class SysRoleController {
     public JsonData list() {
         List<SysRolePo> page = roleService.getAll();
         return JsonData.success(page);
+    }
+
+    @RequestMapping(value = "/roleTree.json",method = RequestMethod.POST)
+    @ResponseBody
+    public JsonData roleTree(@RequestParam int roleId) {
+        return JsonData.success(treeService.roleTree(roleId));
     }
 
 }

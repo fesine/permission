@@ -481,14 +481,14 @@
                     console.log("delete user:" + username);
                 }
             });
-            $(".user-name").click(function (e) {
-                e.preventDefault();
-                //关闭冒泡事件
-                e.stopPropagation();
-                var userId = $(this).attr("data-id");
-                handleUserSelected(userId);
-
-            });
+            // $(".user-name").click(function (e) {
+            //     e.preventDefault();
+            //     //关闭冒泡事件
+            //     e.stopPropagation();
+            //     var userId = $(this).attr("data-id");
+            //     handleUserSelected(userId);
+            //
+            // });
 
             $(".user-edit").click(function (e) {
                 e.preventDefault();

@@ -26,6 +26,11 @@ public class AclModuleLevelDto extends SysAclModulePo {
     private List<AclModuleLevelDto> aclModuleList = Lists.newArrayList();
 
     /**
+     * 权限模块下挂接权限点
+     */
+    private List<AclDto> aclList = Lists.newArrayList();
+
+    /**
      * 将po转成dto使用
      * @param aclModulePo
      * @return

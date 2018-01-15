@@ -3,6 +3,7 @@ package com.fesine.auth.po;
 import com.fesine.dao.BasePo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of={"id"})
 public class SysAclPo extends BasePo {
 	private static final long serialVersionUID = 1L;
 	//alias
