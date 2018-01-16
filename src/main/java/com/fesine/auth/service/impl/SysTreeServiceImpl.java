@@ -49,6 +49,20 @@ public class SysTreeServiceImpl implements SysTreeService {
     }
 
     @Override
+    public List<AclModuleLevelDto> userAclTree(int userId) {
+        //1、当前用户已分配的权限点
+        List<SysAclPo> userAclList = sysCoreService.getUserAclList(userId);
+        List<AclDto> aclDtoList = Lists.newArrayList();
+        for (SysAclPo sysAclPo : userAclList) {
+            AclDto aclDto = AclDto.adapt(sysAclPo);
+            aclDto.setHasAcl(true);
+            aclDto.setChecked(true);
+            aclDtoList.add(aclDto);
+        }
+        return aclListToTree(aclDtoList);
+    }
+
+    @Override
     public List<AclModuleLevelDto> aclModuleTree() {
         //获取所有权限模块信息
         List<SysAclModulePo> aclModulePoList = daoService.selectList(new SysAclModulePo());
@@ -75,7 +89,7 @@ public class SysTreeServiceImpl implements SysTreeService {
         List<AclDto> aclDtoList = Lists.newArrayList();
         for (SysAclPo sysAclPo : allList) {
             AclDto aclDto = AclDto.adapt(sysAclPo);
-            if(userAclIdSet.contains(sysAclPo.getId())){
+            if (userAclIdSet.contains(sysAclPo.getId())) {
                 aclDto.setHasAcl(true);
             }
             if (roleAclIdSet.contains(sysAclPo.getId())) {
@@ -87,7 +101,8 @@ public class SysTreeServiceImpl implements SysTreeService {
         return aclListToTree(aclDtoList);
     }
 
-    public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList){
+
+    public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
         if (CollectionUtils.isEmpty(aclDtoList)) {
             return Lists.newArrayList();
         }
@@ -113,11 +128,10 @@ public class SysTreeServiceImpl implements SysTreeService {
                 Collections.sort(aclDtoList, aclSeqComparator);
                 dto.setAclList(aclDtoList);
             }
-            bindAclsWithOrder(dto.getAclModuleList(),moduleIdAclMap);
+            bindAclsWithOrder(dto.getAclModuleList(), moduleIdAclMap);
         }
 
     }
-
 
 
     public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> aclModuleLevelList) {

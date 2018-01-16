@@ -21,5 +21,11 @@ public interface SysRoleUserService {
      */
     List<SysUserPo> getListByRoleId(Integer roleId);
 
+    /**
+     * 给当前角色分配用户
+     * @param roleId
+     * @param userIdList
+     */
     void changeRoleUsers(Integer roleId,List<Integer> userIdList);
+
 }

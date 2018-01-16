@@ -483,25 +483,26 @@
         }
 
         function bindUserClick() {
-            $(".user-delete").click(function (e) {
+            //用户权限角色查看
+            $(".user-acl").click(function (e) {
                 e.preventDefault();
                 //关闭冒泡事件
                 e.stopPropagation();
                 var userId = $(this).attr("data-id");
-                var username = $(this).attr("data-name");
-                if (confirm("确定要删除用户【" + username + "】吗？")) {
-                    //TODO:删除用户信息
-                    console.log("delete user:" + username);
-                }
+                $.ajax({
+                    url:"/sys/user/acls.json",
+                    data:{
+                        id: userId
+                    },
+                    success:function (result) {
+                        if(result.ret){
+                            console.log(result.data);
+                        }else {
+                            showMessage("查看用户权限", result.msg, false);
+                        }
+                    }
+                });
             });
-            // $(".user-name").click(function (e) {
-            //     e.preventDefault();
-            //     //关闭冒泡事件
-            //     e.stopPropagation();
-            //     var userId = $(this).attr("data-id");
-            //     handleUserSelected(userId);
-            //
-            // });
 
             $(".user-edit").click(function (e) {
                 e.preventDefault();

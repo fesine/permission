@@ -2,6 +2,7 @@ package com.fesine.auth.service;
 
 import com.fesine.auth.param.RoleParam;
 import com.fesine.auth.po.SysRolePo;
+import com.fesine.auth.po.SysUserPo;
 
 import java.util.List;
 
@@ -38,4 +39,25 @@ public interface SysRoleService {
      * @param id
      */
     void delete(int id);
+
+    /**
+     * 根据用户id获取角色列表
+     * @param userId
+     * @return
+     */
+    List<SysRolePo> getRoleListByUserId(int userId);
+
+    /**
+     * 根据权限点id获取角色列表
+     * @param aclId
+     * @return
+     */
+    List<SysRolePo> getRoleListByAclId(int aclId);
+
+    /**
+     * 根据角色id列表获取用户列表
+     * @param roleList
+     * @return
+     */
+    List<SysUserPo> getUserListByRoleList(List<SysRolePo> roleList);
 }

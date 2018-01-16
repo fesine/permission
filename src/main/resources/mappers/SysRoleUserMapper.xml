@@ -225,5 +225,16 @@
 		user_id = #{userId}
 	</select>
 	
+	<select id="getUserIdListByRoleIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column"/>
+		from
+		<include refid="Table_Name"/>
+		where role_id in
+		<foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+			#{roleId}
+		</foreach>
+	</select>
+
 
 </mapper>

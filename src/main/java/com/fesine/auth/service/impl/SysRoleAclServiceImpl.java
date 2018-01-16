@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @description: 类描述
@@ -28,16 +29,15 @@ import java.util.Set;
 public class SysRoleAclServiceImpl implements SysRoleAclService {
     @Autowired
     private IDaoService daoService;
+
     @Override
     public void changeRoleAcls(Integer roleId, List<Integer> aclIdList) {
         //获取原来权限点数据
         SysRoleAclPo roleAclPo = new SysRoleAclPo();
         roleAclPo.setRoleId(roleId);
         List<SysRoleAclPo> roleAclPoList = daoService.selectList(roleAclPo);
-        List<Integer> originAclIdList = Lists.newArrayList();
-        for (SysRoleAclPo temPo : roleAclPoList) {
-            originAclIdList.add(temPo.getAclId());
-        }
+        List<Integer> originAclIdList = roleAclPoList.stream().map(temPo -> temPo.getAclId())
+                .collect(Collectors.toList());
         if (originAclIdList.size() == aclIdList.size()) {
             Set<Integer> originAclIdSet = Sets.newHashSet(originAclIdList);
             Set<Integer> aclIdSet = Sets.newHashSet(aclIdList);
@@ -50,7 +50,7 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateRoleAcls(Integer roleId, List<Integer> aclIdList){
+    public void updateRoleAcls(Integer roleId, List<Integer> aclIdList) {
         //删除旧数据
         SysRoleAclPo sysRoleAclPo = SysRoleAclPo.builder().roleId(roleId).build();
         daoService.delete(sysRoleAclPo);

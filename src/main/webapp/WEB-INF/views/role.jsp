@@ -469,7 +469,6 @@
             e.stopPropagation();
             var roleId = $(this).attr("data-id");
             handleRoleSelected(roleId);
-
         });
 
     }
@@ -487,6 +486,8 @@
         $(".roleTab a:first").trigger();
         if (selectFirstTab) {
             loadRoleAcl(roleId);
+        }else {
+            loadRoleUser(roleId);
         }
     }
 

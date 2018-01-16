@@ -656,6 +656,27 @@ $(function () {
             //
             // });
 
+            //权限分配查看
+            $(".acl-role").click(function (e) {
+                e.preventDefault();
+                //关闭冒泡事件
+                e.stopPropagation();
+                var aclId = $(this).attr("data-id");
+                $.ajax({
+                    url: "/sys/acl/acls.json",
+                    data: {
+                        id: aclId
+                    },
+                    success: function (result) {
+                        if (result.ret) {
+                            console.log(result.data);
+                        } else {
+                            showMessage("查看权限分配", result.msg, false);
+                        }
+                    }
+                });
+            });
+
             $(".acl-edit").click(function (e) {
                 e.preventDefault();
                 //关闭冒泡事件
