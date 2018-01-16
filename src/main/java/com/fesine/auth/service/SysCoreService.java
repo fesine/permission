@@ -33,4 +33,11 @@ public interface SysCoreService {
      * @return
      */
     List<SysAclPo> getRoleAclList(int roleId);
+
+    /**
+     * 判断是否具有访问权限
+     * @param url
+     * @return
+     */
+    boolean hasUrlAcl(String url);
 }

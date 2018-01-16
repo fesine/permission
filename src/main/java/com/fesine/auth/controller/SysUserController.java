@@ -37,6 +37,11 @@ public class SysUserController {
     @Autowired
     private SysRoleService roleService;
 
+    @RequestMapping("noAuth.page")
+    public ModelAndView noAuth() {
+        return new ModelAndView("noAuth");
+    }
+
     @RequestMapping("/user.page")
     public ModelAndView page() {
         return new ModelAndView("user");

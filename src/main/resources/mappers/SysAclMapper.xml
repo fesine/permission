@@ -381,6 +381,15 @@
 			#{id}
 		</foreach>
 	</select>
-	
+
+	<select id="getByUrl" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column"/>
+		from
+		<include refid="Table_Name"/>
+		WHERE url = #{url}
+	<!--no null and url !='' and #{url} REGEXP url -->
+	</select>
+
 
 </mapper>

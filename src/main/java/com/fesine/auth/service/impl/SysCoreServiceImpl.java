@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +82,39 @@ public class SysCoreServiceImpl implements SysCoreService {
         return getSysAclPoList(paraMap);
     }
 
+    @Override
+    public boolean hasUrlAcl(String url) {
+        //超级用户直接访问
+        if (isSuperAdmin(RequestHolder.getCurrentUser().getId())) {
+            return true;
+        }
+        //根据url取出对应的acl
+        SysAclPo aclPo = SysAclPo.builder().url(url).build();
+        List<SysAclPo> aclPoList = daoService.selectList(SysAclPo.class.getName() + ".getByUrl",
+                aclPo);
+        if (CollectionUtils.isEmpty(aclPoList)) {
+            return true;
+        }
+        List<SysAclPo> userAclList = getCurrentUserAclList();
+        Set<Integer> userAclIdSet = userAclList.stream().map(aclPoTemp -> aclPoTemp.getId()).collect
+                (Collectors.toSet());
+        //只要有一个权限点有权限，就可以访问
+        boolean hasValidAcl = false;
+        for (SysAclPo sysAclPo : aclPoList) {
+            if (sysAclPo == null || sysAclPo.getStatus() != 1) {
+                continue;
+            }
+            hasValidAcl = true;
+            if (userAclIdSet.contains(sysAclPo.getId())) {
+                return true;
+            }
+        }
+        if(!hasValidAcl){
+            return true;
+        }
+        return false;
+    }
+
     private List<SysAclPo> getSysAclPoList(Map<String, Object> paraMap) {
         if (paraMap.isEmpty()) {
             return Lists.newArrayList();
@@ -97,7 +131,7 @@ public class SysCoreServiceImpl implements SysCoreService {
      * 判断是否是超级管理员
      * @return
      */
-    public boolean isSuperAdmin(int userId) {
+    public boolean isSuperAdmin(Integer userId) {
         SysUserPo sysUserPo = SysUserPo.builder().id(userId).build();
         sysUserPo = daoService.selectOne(sysUserPo);
         if(sysUserPo.getEmail().contains("admin")){
