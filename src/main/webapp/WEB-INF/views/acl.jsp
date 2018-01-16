@@ -455,7 +455,30 @@ $(function () {
                     }
                 }
             });
-        })
+        });
+        $(".aclModule-delete").click(function (e) {
+            e.preventDefault();
+            //关闭冒泡事件
+            e.stopPropagation();
+            var aclModuleId = $(this).attr("data-id");
+            var name = $(this).attr("data-name");
+            if (confirm("确定要删除权限模块【" + name + "】吗？")) {
+                $.ajax({
+                    url: "/sys/aclModule/delete.json",
+                    data: {
+                        id: aclModuleId
+                    },
+                    success: function (result) {
+                        if (result.ret) {
+                            showMessage("删除权限模块[" + name + "]", "操作成功", true);
+                            loadAclModuleTree();
+                        } else {
+                            showMessage("删除权限模块[" + name + "]", result.msg, false);
+                        }
+                    }
+                })
+            }
+        });
 
         $(".aclModule-name").click(function (e) {
             e.preventDefault();
@@ -601,25 +624,37 @@ $(function () {
         }
 
         function bindAclClick() {
-            $(".acl-delete").click(function (e) {
-                e.preventDefault();
-                //关闭冒泡事件
-                e.stopPropagation();
-                var aclId = $(this).attr("data-id");
-                var name = $(this).attr("data-name");
-                if (confirm("确定要删除权限点【" + name + "】吗？")) {
-                    //TODO:删除用户信息
-                    console.log("delete acl:" + name);
-                }
-            });
-            $(".acl-name").click(function (e) {
-                e.preventDefault();
-                //关闭冒泡事件
-                e.stopPropagation();
-                var aclId = $(this).attr("data-id");
-                handleAclSelected(aclId);
-
-            });
+            // $(".acl-delete").click(function (e) {
+            //     e.preventDefault();
+            //     //关闭冒泡事件
+            //     e.stopPropagation();
+            //     var aclId = $(this).attr("data-id");
+            //     var name = $(this).attr("data-name");
+            //     if (confirm("确定要删除权限点【" + name + "】吗？")) {
+            //         $.ajax({
+            //             url: "/sys/acl/delete.json",
+            //             data: {
+            //                 id: aclId
+            //             },
+            //             success: function (result) {
+            //                 if (result.ret) {
+            //                     showMessage("删除权限点[" + name + "]", "操作成功", true);
+            //                     loadAclList(lastClickAclModuleId);
+            //                 } else {
+            //                     showMessage("删除权限点[" + name + "]", result.msg, false);
+            //                 }
+            //             }
+            //         })
+            //     }
+            // });
+            // $(".acl-name").click(function (e) {
+            //     e.preventDefault();
+            //     //关闭冒泡事件
+            //     e.stopPropagation();
+            //     var aclId = $(this).attr("data-id");
+            //     handleAclSelected(aclId);
+            //
+            // });
 
             $(".acl-edit").click(function (e) {
                 e.preventDefault();

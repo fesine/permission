@@ -5,6 +5,7 @@ import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.exception.ParamException;
 import com.fesine.auth.param.AclModuleParam;
 import com.fesine.auth.po.SysAclModulePo;
+import com.fesine.auth.po.SysAclPo;
 import com.fesine.auth.service.SysAclModuleService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
@@ -76,6 +77,29 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         //执行更新操作
         updateWithChild(before, after);
 
+    }
+
+    @Override
+    public void delete(Integer id) {
+        //检查当前权限模块是否存在
+        SysAclModulePo sysAclModulePo = SysAclModulePo.builder().id(id).build();
+        sysAclModulePo = daoService.selectOne(sysAclModulePo);
+        Preconditions.checkNotNull(sysAclModulePo, "当前需要删除的权限模块不存在，无法删除");
+        //检查是否有子权限模块
+        sysAclModulePo = SysAclModulePo.builder().parentId(id).build();
+        List<SysAclModulePo> deptPoList = daoService.selectList(sysAclModulePo);
+        if (CollectionUtils.isNotEmpty(deptPoList)) {
+            throw new ParamException("当前部门下存在子权限模块，无法删除");
+        }
+        //检查当前权限模块下是否有权限点
+        SysAclPo sysAclPo = SysAclPo.builder().aclModuleId(id).build();
+        List<SysAclPo> sysAclPoList = daoService.selectList(sysAclPo);
+        if (CollectionUtils.isNotEmpty(sysAclPoList)) {
+            throw new ParamException("当前部门下存在权限点，无法删除");
+        }
+        //执行删除
+        sysAclModulePo = SysAclModulePo.builder().id(id).build();
+        daoService.delete(sysAclModulePo);
     }
 
     @Transactional(rollbackFor = Exception.class)

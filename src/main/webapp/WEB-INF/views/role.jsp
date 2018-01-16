@@ -397,6 +397,29 @@
     })
 
     function bindRoleClick() {
+        $(".role-delete").click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //id选择器
+            var roleId = $(this).attr("data-id");
+            var roleName = $(this).attr("data-name");
+            if (confirm("确定要删除角色【" + roleName + "】吗？")) {
+                $.ajax({
+                    url: "/sys/role/delete.json",
+                    data: {
+                        id: roleId
+                    },
+                    success: function (result) {
+                        if (result.ret) {
+                            showMessage("删除角色[" + roleName + "]", "删除成功", true);
+                            loadRoleList();
+                        } else {
+                            showMessage("删除角色[" + roleName + "]", result.msg, false);
+                        }
+                    }
+                })
+            }
+        });
         $(".role-edit").click(function (e) {
             e.preventDefault();
             e.stopPropagation();

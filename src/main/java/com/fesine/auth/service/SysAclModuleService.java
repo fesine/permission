@@ -23,4 +23,10 @@ public interface SysAclModuleService {
      * @param param
      */
     void update(AclModuleParam param);
+
+    /**
+     * 删除权限模块信息
+     * @param id
+     */
+    void delete(Integer id);
 }

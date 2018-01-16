@@ -32,4 +32,10 @@ public interface SysRoleService {
      * @return
      */
     List<SysRolePo> getAll();
+
+    /**
+     * 删除角色
+     * @param id
+     */
+    void delete(int id);
 }

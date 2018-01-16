@@ -5,6 +5,7 @@ import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.exception.ParamException;
 import com.fesine.auth.param.DeptParam;
 import com.fesine.auth.po.SysDeptPo;
+import com.fesine.auth.po.SysUserPo;
 import com.fesine.auth.service.SysDeptService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
@@ -76,6 +77,29 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setOperateTime(new Date());
         //执行更新操作
         updateWithChild(before, after);
+    }
+
+    @Override
+    public void delete(Integer deptId) {
+        //检查当前部门是否存在
+        SysDeptPo sysDeptPo = SysDeptPo.builder().id(deptId).build();
+        sysDeptPo = daoService.selectOne(sysDeptPo);
+        Preconditions.checkNotNull(sysDeptPo, "当前需要删除的部门不存在，无法删除");
+        //检查是否有子部门
+        sysDeptPo = SysDeptPo.builder().parentId(deptId).build();
+        List<SysDeptPo> deptPoList = daoService.selectList(sysDeptPo);
+        if (CollectionUtils.isNotEmpty(deptPoList)) {
+            throw new ParamException("当前部门下存在子部门，无法删除");
+        }
+        //检查当前权限模块下是否有权限点
+        SysUserPo sysUserPo = SysUserPo.builder().deptId(deptId).build();
+        List<SysUserPo> sysUserPoList = daoService.selectList(sysUserPo);
+        if (CollectionUtils.isNotEmpty(sysUserPoList)) {
+            throw new ParamException("当前部门下存在用户，无法删除");
+        }
+        //执行删除
+        sysDeptPo = SysDeptPo.builder().id(deptId).build();
+        daoService.delete(sysDeptPo);
     }
 
     @Transactional(rollbackFor = Exception.class)

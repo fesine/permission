@@ -8,6 +8,7 @@ import com.fesine.auth.service.SysTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -71,5 +72,12 @@ public class SysAclModuleController {
     public JsonData tree() {
         List<AclModuleLevelDto> dtoList = treeService.aclModuleTree();
         return JsonData.success(dtoList);
+    }
+
+    @RequestMapping("delete.json")
+    @ResponseBody
+    public JsonData deleteAclModule(@RequestParam Integer id) {
+        sysAclModuleService.delete(id);
+        return JsonData.success();
     }
 }

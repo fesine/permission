@@ -132,4 +132,16 @@ public class SysRoleController {
         return JsonData.success(map);
     }
 
+    /**
+     * 角色删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delete.json")
+    @ResponseBody
+    public JsonData delete(@RequestParam Integer id){
+            roleService.delete(id);
+        return JsonData.success();
+    }
+
 }
