@@ -52,8 +52,7 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
     @Transactional(rollbackFor = Exception.class)
     public void updateRoleAcls(Integer roleId, List<Integer> aclIdList){
         //删除旧数据
-        SysRoleAclPo sysRoleAclPo = new SysRoleAclPo();
-        sysRoleAclPo.setRoleId(roleId);
+        SysRoleAclPo sysRoleAclPo = SysRoleAclPo.builder().roleId(roleId).build();
         daoService.delete(sysRoleAclPo);
         if (CollectionUtils.isEmpty(aclIdList)) {
             return;

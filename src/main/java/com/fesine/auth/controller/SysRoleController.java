@@ -3,10 +3,11 @@ package com.fesine.auth.controller;
 import com.fesine.auth.common.JsonData;
 import com.fesine.auth.param.RoleParam;
 import com.fesine.auth.po.SysRolePo;
-import com.fesine.auth.service.SysRoleAclService;
-import com.fesine.auth.service.SysRoleService;
-import com.fesine.auth.service.SysTreeService;
+import com.fesine.auth.po.SysUserPo;
+import com.fesine.auth.service.*;
 import com.fesine.auth.util.StringUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @description: 类描述
@@ -37,6 +41,12 @@ public class SysRoleController {
 
     @Autowired
     private SysRoleAclService roleAclService;
+
+    @Autowired
+    private SysRoleUserService roleUserService;
+
+    @Autowired
+    private SysUserService sysUserService;
 
     @RequestMapping("role.page")
     public ModelAndView page() {
@@ -89,6 +99,37 @@ public class SysRoleController {
         List<Integer> aclsList = StringUtil.splitToListInt(aclIds);
         roleAclService.changeRoleAcls(roleId, aclsList);
         return JsonData.success();
+    }
+
+    @RequestMapping(value = "/changeUsers.json",method = RequestMethod.POST)
+    @ResponseBody
+    public JsonData changeUsers(@RequestParam int roleId,
+                               @RequestParam(required = false,defaultValue = "") String userIds) {
+        List<Integer> userIdsList = StringUtil.splitToListInt(userIds);
+        roleUserService.changeRoleUsers(roleId, userIdsList);
+        return JsonData.success();
+    }
+
+    @RequestMapping(value = "/users.json")
+    @ResponseBody
+    public JsonData users(@RequestParam int roleId) {
+        List<SysUserPo> selectedUserList = roleUserService.getListByRoleId(roleId);
+        List<SysUserPo> allUserList = sysUserService.getAll();
+        List<SysUserPo> unselectedUserList = Lists.newArrayList();
+        Set<Integer> selectSet = selectedUserList.stream().map(sysUserPo -> sysUserPo.getId())
+                .collect(Collectors.toSet());
+        for (SysUserPo sysUserPo : allUserList) {
+            if (sysUserPo.getStatus() == 1 && !selectSet.contains(sysUserPo.getId())) {
+                unselectedUserList.add(sysUserPo);
+            }
+        }
+        //过滤状态!=1的用户，是否有必要
+        //unselectedUserList = unselectedUserList.stream().filter(sysUserPo -> sysUserPo.getStatus
+        //        () != 1).collect(Collectors.toList());
+        Map<String, List<SysUserPo>> map=Maps.newHashMap();
+        map.put("selected", selectedUserList);
+        map.put("unselected", unselectedUserList);
+        return JsonData.success(map);
     }
 
 }

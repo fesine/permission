@@ -340,7 +340,9 @@
     </select>
 
     <select id="findByKeyword" resultMap="BaseResultMap">
-        select * from
+        select
+        <include refid="Base_Column"/>
+        from
         <include refid="Table_Name"/>
         WHERE telephone = #{username} OR email = #{username}
     </select>
@@ -352,6 +354,17 @@
     <select id="selectForUpdate" resultMap="BaseResultMap" useCache="false">
         <include refid="Base_Select"/>
         for update
+    </select>
+
+    <select id="getByIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column"/>
+        from
+        <include refid="Table_Name"/>
+        WHERE id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 

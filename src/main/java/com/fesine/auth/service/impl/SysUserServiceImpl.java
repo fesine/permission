@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @description: 用户管理实现类
@@ -99,6 +100,11 @@ public class SysUserServiceImpl implements SysUserService {
         PageResult<SysUserPo> pageResult = PageResult.<SysUserPo>builder().total(queryResult
                 .getTotalRecord()).data(queryResult.getResultList()).build();
         return pageResult;
+    }
+
+    @Override
+    public List<SysUserPo> getAll() {
+        return daoService.selectList(new SysUserPo());
     }
 
     public boolean checkTelephoneExist(String telephone, Integer userId) {

@@ -5,6 +5,8 @@ import com.fesine.auth.beans.PageResult;
 import com.fesine.auth.param.UserParam;
 import com.fesine.auth.po.SysUserPo;
 
+import java.util.List;
+
 /**
  * @description: 用户管理服务接口
  * @author: Fesine
@@ -33,6 +35,18 @@ public interface SysUserService {
      */
     SysUserPo findByKeyword(String keyword);
 
+    /**
+     * 根据部门id分页获取用户
+     * @param deptId
+     * @param pageQuery
+     * @return
+     */
     PageResult<SysUserPo> getPageByDeptId(int deptId, PageQuery pageQuery);
+
+    /**
+     * 获取全部用户列表
+     * @return
+     */
+    List<SysUserPo> getAll();
 
 }
