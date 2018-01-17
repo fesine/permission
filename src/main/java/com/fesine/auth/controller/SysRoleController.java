@@ -86,7 +86,7 @@ public class SysRoleController {
         return JsonData.success(page);
     }
 
-    @RequestMapping(value = "/roleTree.json",method = RequestMethod.POST)
+    @RequestMapping(value = "/roleTree.json")
     @ResponseBody
     public JsonData roleTree(@RequestParam int roleId) {
         return JsonData.success(treeService.roleTree(roleId));

@@ -269,7 +269,6 @@
 
     function getTreeSelectedId() {
         var treeObj = $.fn.zTree.getZTreeObj("roleAclTree");
-        debugger
         var nodes = treeObj.getCheckedNodes(true);
         var v = "";
         for (var i = 0; i < nodes.length; i++) {
@@ -500,7 +499,6 @@
             data: {
                 roleId: selectedRoleId
             },
-            type: "POST",
             success: function (result) {
                 if (result.ret) {
                     renderRoleTree(result.data);

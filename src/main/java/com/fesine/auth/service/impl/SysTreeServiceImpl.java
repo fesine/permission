@@ -48,6 +48,11 @@ public class SysTreeServiceImpl implements SysTreeService {
         return deptListToTree(dtoList);
     }
 
+    /**
+     * 获取当前用户分配的权限点
+     * @param userId
+     * @return
+     */
     @Override
     public List<AclModuleLevelDto> userAclTree(int userId) {
         //1、当前用户已分配的权限点
@@ -74,6 +79,11 @@ public class SysTreeServiceImpl implements SysTreeService {
         return aclModuleListToTree(dtoList);
     }
 
+    /**
+     * 获取权限树
+     * @param roleId
+     * @return
+     */
     @Override
     public List<AclModuleLevelDto> roleTree(int roleId) {
         //1、当前用户已分配的权限点

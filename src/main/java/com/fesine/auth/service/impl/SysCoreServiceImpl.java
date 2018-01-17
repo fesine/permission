@@ -1,14 +1,19 @@
 package com.fesine.auth.service.impl;
 
+import com.fesine.auth.beans.CacheKeyConstants;
 import com.fesine.auth.common.RequestHolder;
 import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.po.SysAclPo;
 import com.fesine.auth.po.SysRoleAclPo;
 import com.fesine.auth.po.SysRoleUserPo;
 import com.fesine.auth.po.SysUserPo;
+import com.fesine.auth.service.SysCacheService;
 import com.fesine.auth.service.SysCoreService;
+import com.fesine.auth.util.JsonMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +36,9 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Autowired
     private IDaoService daoService;
+
+    @Autowired
+    private SysCacheService cacheService;
 
     @Override
     public List<SysAclPo> getCurrentUserAclList() {
@@ -95,7 +103,7 @@ public class SysCoreServiceImpl implements SysCoreService {
         if (CollectionUtils.isEmpty(aclPoList)) {
             return true;
         }
-        List<SysAclPo> userAclList = getCurrentUserAclList();
+        List<SysAclPo> userAclList = getCurrentUserAclListFromCache();
         Set<Integer> userAclIdSet = userAclList.stream().map(aclPoTemp -> aclPoTemp.getId()).collect
                 (Collectors.toSet());
         //只要有一个权限点有权限，就可以访问
@@ -138,6 +146,21 @@ public class SysCoreServiceImpl implements SysCoreService {
             return true;
         }
         return false;
+    }
+
+    List<SysAclPo> getCurrentUserAclListFromCache(){
+        int userId = RequestHolder.getCurrentUser().getId();
+        String cacheValue = cacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf
+                (userId));
+        if (StringUtils.isBlank(cacheValue)) {
+            List<SysAclPo> aclPoList = getCurrentUserAclList();
+            if(CollectionUtils.isNotEmpty(aclPoList)){
+                cacheService.saveCache(JsonMapper.obj2String(aclPoList),600, CacheKeyConstants.USER_ACLS, String.valueOf
+                        (userId));
+            }
+            return aclPoList;
+        }
+        return JsonMapper.string2Obj(cacheValue, new TypeReference<List<SysAclPo>>() {});
     }
 
 
