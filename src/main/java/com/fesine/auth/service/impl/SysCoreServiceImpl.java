@@ -40,6 +40,8 @@ public class SysCoreServiceImpl implements SysCoreService {
     @Autowired
     private SysCacheService cacheService;
 
+
+
     @Override
     public List<SysAclPo> getCurrentUserAclList() {
         int userId = RequestHolder.getCurrentUser().getId();
@@ -92,7 +94,6 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public boolean hasUrlAcl(String url) {
-        //超级用户直接访问
         if (isSuperAdmin(RequestHolder.getCurrentUser().getId())) {
             return true;
         }
@@ -103,7 +104,9 @@ public class SysCoreServiceImpl implements SysCoreService {
         if (CollectionUtils.isEmpty(aclPoList)) {
             return true;
         }
-        List<SysAclPo> userAclList = getCurrentUserAclListFromCache();
+        List<SysAclPo> userAclList;
+        userAclList = getCurrentUserAclListFromCache();
+        //超级用户直接访问
         Set<Integer> userAclIdSet = userAclList.stream().map(aclPoTemp -> aclPoTemp.getId()).collect
                 (Collectors.toSet());
         //只要有一个权限点有权限，就可以访问

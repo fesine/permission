@@ -6,6 +6,7 @@ import com.fesine.auth.service.SysCacheService;
 import com.fesine.auth.util.JsonMapper;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 
@@ -22,8 +23,12 @@ import javax.annotation.Resource;
 @Service
 @Slf4j
 public class SysCacheServiceImpl implements SysCacheService {
-    @Resource(name="redisPool")
+    @Resource(name = "redisPool")
     private RedisPool redisPool;
+
+    @Value("${redis.flag}")
+    private boolean redisFlag;
+
     @Override
     public void saveCache(String toSaveValue, int timeoutSeconds, CacheKeyConstants prefix) {
         saveCache(toSaveValue, timeoutSeconds, prefix, null);
@@ -32,7 +37,9 @@ public class SysCacheServiceImpl implements SysCacheService {
     @Override
     public void saveCache(String toSaveValue, int timeoutSeconds, CacheKeyConstants prefix,
                           String... keys) {
-
+        if(!redisFlag){
+            return;
+        }
         if (toSaveValue == null) {
             return;
         }
@@ -51,6 +58,9 @@ public class SysCacheServiceImpl implements SysCacheService {
 
     @Override
     public String getFromCache(CacheKeyConstants prefix, String... keys) {
+        if (!redisFlag) {
+            return null;
+        }
         ShardedJedis shardedJedis = null;
         try {
             String cacheKey = generatorCacheKey(prefix, keys);
@@ -71,4 +81,6 @@ public class SysCacheServiceImpl implements SysCacheService {
         }
         return  key;
     }
+
+
 }
