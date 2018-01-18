@@ -7,6 +7,7 @@ import com.fesine.auth.param.AclModuleParam;
 import com.fesine.auth.po.SysAclModulePo;
 import com.fesine.auth.po.SysAclPo;
 import com.fesine.auth.service.SysAclModuleService;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
 import com.fesine.auth.util.LevelUtil;
@@ -31,6 +32,8 @@ import java.util.List;
 public class SysAclModuleServiceImpl implements SysAclModuleService {
     @Autowired
     private IDaoService daoService;
+    @Autowired
+    private SysLogService sysLogService;
     @Override
     public void save(AclModuleParam param) {
         //检查参数
@@ -48,7 +51,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         sysAclModulePo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysAclModulePo.setOperateTime(new Date());
         daoService.insert(sysAclModulePo);
-
+        sysLogService.saveAclModuleLog(null, sysAclModulePo);
     }
 
     @Override
@@ -76,6 +79,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         after.setOperateTime(new Date());
         //执行更新操作
         updateWithChild(before, after);
+        sysLogService.saveAclModuleLog(before, after);
 
     }
 
@@ -100,6 +104,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         //执行删除
         sysAclModulePo = SysAclModulePo.builder().id(id).build();
         daoService.delete(sysAclModulePo);
+        sysLogService.saveAclModuleLog(sysAclModulePo, null);
     }
 
     @Transactional(rollbackFor = Exception.class)

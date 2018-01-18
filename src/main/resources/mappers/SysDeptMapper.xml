@@ -81,7 +81,7 @@
     </sql>
 
 
-    <insert id="insert">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into
         <include refid="Table_Name"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">

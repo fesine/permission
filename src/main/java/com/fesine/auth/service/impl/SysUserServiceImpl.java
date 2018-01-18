@@ -7,6 +7,7 @@ import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.exception.ParamException;
 import com.fesine.auth.param.UserParam;
 import com.fesine.auth.po.SysUserPo;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.service.SysUserService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
@@ -35,6 +36,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private IDaoService daoService;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void save(UserParam param) {
         BeanValidator.check(param);
@@ -55,6 +59,7 @@ public class SysUserServiceImpl implements SysUserService {
         userPo.setOperateTime(new Date());
         //TODO 发送邮件
         daoService.insert(userPo);
+        sysLogService.saveUserLog(null,userPo);
 
     }
 
@@ -80,6 +85,7 @@ public class SysUserServiceImpl implements SysUserService {
         userPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         userPo.setOperateTime(new Date());
         daoService.update(userPo);
+        sysLogService.saveUserLog(before,userPo);
     }
 
     @Override

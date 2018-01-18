@@ -3,6 +3,7 @@ package com.fesine.auth.service.impl;
 import com.fesine.auth.common.RequestHolder;
 import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.po.SysRoleAclPo;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.service.SysRoleAclService;
 import com.fesine.auth.util.IpUtil;
 import com.google.common.collect.Lists;
@@ -30,6 +31,9 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
     @Autowired
     private IDaoService daoService;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void changeRoleAcls(Integer roleId, List<Integer> aclIdList) {
         //获取原来权限点数据
@@ -47,6 +51,7 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
             }
         }
         updateRoleAcls(roleId, aclIdList);
+        sysLogService.saveRoleAclLog(roleId,originAclIdList,aclIdList);
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -7,6 +7,7 @@ import com.fesine.auth.param.DeptParam;
 import com.fesine.auth.po.SysDeptPo;
 import com.fesine.auth.po.SysUserPo;
 import com.fesine.auth.service.SysDeptService;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
 import com.fesine.auth.util.LevelUtil;
@@ -33,6 +34,9 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Autowired
     private IDaoService daoService;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void save(DeptParam param) {
         //检查参数
@@ -50,6 +54,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         sysDeptPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysDeptPo.setOperateTime(new Date());
         daoService.insert(sysDeptPo);
+        sysLogService.saveDeptLog(null,sysDeptPo);
 
     }
 
@@ -77,6 +82,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setOperateTime(new Date());
         //执行更新操作
         updateWithChild(before, after);
+        sysLogService.saveDeptLog(before, after);
     }
 
     @Override
@@ -100,6 +106,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         //执行删除
         sysDeptPo = SysDeptPo.builder().id(deptId).build();
         daoService.delete(sysDeptPo);
+        sysLogService.saveDeptLog(sysDeptPo, null);
     }
 
     @Transactional(rollbackFor = Exception.class)

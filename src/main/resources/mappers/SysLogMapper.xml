@@ -82,7 +82,7 @@
 
 
 
-	<insert id="insert" >
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
 		insert into
 		<include refid="Table_Name" />
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -282,6 +282,46 @@
      <select id="selectForUpdate" resultMap="BaseResultMap" useCache="false">
 		 <include refid="Base_Select" />
 		for update
+	</select>
+
+	<select id="searchLog" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column"/>
+		from
+		<include refid="Table_Name"/>
+		<where>
+			<trim suffixOverrides="AND">
+				<if test="type != null">
+					type= #{type}
+					AND
+				</if>
+				<if test="targetId != null">
+					target_id= #{targetId}
+					AND
+				</if>
+				<if test="oldValue != null">
+					old_value LIKE #{oldValue}
+					AND
+				</if>
+				<if test="newValue != null">
+					new_value LIKE #{newValue}
+					AND
+				</if>
+				<if test="operator != null">
+					operator LIKE #{operator}
+					AND
+				</if>
+				<if test="fromTime != null">
+					operate_time &gt;= #{fromTime}
+					AND
+				</if>
+				<if test="toTime != null">
+					operate_time &lt;= #{toTime}
+					AND
+				</if>
+			</trim>
+		</where>
+		ORDER BY operate_time DESC
 	</select>
 	
 

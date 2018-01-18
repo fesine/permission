@@ -8,6 +8,7 @@ import com.fesine.auth.exception.ParamException;
 import com.fesine.auth.param.AclParam;
 import com.fesine.auth.po.SysAclPo;
 import com.fesine.auth.service.SysAclService;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
 import com.fesine.dao.model.Order;
@@ -32,6 +33,8 @@ import java.util.Random;
 public class SysAclServiceImpl implements SysAclService {
     @Autowired
     private IDaoService daoService;
+    @Autowired
+    private SysLogService sysLogService;
     @Override
     public void save(AclParam param) {
         BeanValidator.check(param);
@@ -46,6 +49,7 @@ public class SysAclServiceImpl implements SysAclService {
         sysAclPo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysAclPo.setOperateTime(new Date());
         daoService.insert(sysAclPo);
+        sysLogService.saveAclLog(null, sysAclPo);
     }
 
     @Override
@@ -65,6 +69,7 @@ public class SysAclServiceImpl implements SysAclService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         daoService.update(after);
+        sysLogService.saveAclLog(before, after);
     }
 
     @Override

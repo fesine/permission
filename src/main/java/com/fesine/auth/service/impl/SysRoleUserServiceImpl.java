@@ -4,6 +4,7 @@ import com.fesine.auth.common.RequestHolder;
 import com.fesine.auth.dao.IDaoService;
 import com.fesine.auth.po.SysRoleUserPo;
 import com.fesine.auth.po.SysUserPo;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.service.SysRoleUserService;
 import com.fesine.auth.util.IpUtil;
 import com.google.common.collect.Lists;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @description: 类描述
@@ -31,6 +33,9 @@ import java.util.Set;
 public class SysRoleUserServiceImpl implements SysRoleUserService {
     @Autowired
     private IDaoService daoService;
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public List<SysUserPo> getListByRoleId(Integer roleId) {
         SysRoleUserPo sysRoleUserPo = new SysRoleUserPo();
@@ -43,9 +48,9 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         for (SysRoleUserPo roleUserPo : roleUserPoList) {
             userIdList.add(roleUserPo.getUserId());
         }
-        Map<String,Object> paramMap = Maps.newHashMap();
+        Map<String, Object> paramMap = Maps.newHashMap();
         paramMap.put("idList", userIdList);
-        return daoService.selectList(SysUserPo.class.getName()+".getByIdList", paramMap);
+        return daoService.selectList(SysUserPo.class.getName() + ".getByIdList", paramMap);
     }
 
     @Override
@@ -54,10 +59,8 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         SysRoleUserPo roleUserPo = new SysRoleUserPo();
         roleUserPo.setRoleId(roleId);
         List<SysRoleUserPo> roleUserPoList = daoService.selectList(roleUserPo);
-        List<Integer> originUserIdList = Lists.newArrayList();
-        for (SysRoleUserPo temPo : roleUserPoList) {
-            originUserIdList.add(temPo.getUserId());
-        }
+        List<Integer> originUserIdList = roleUserPoList.stream().map(temPo ->
+                temPo.getUserId()).collect(Collectors.toList());
         if (originUserIdList.size() == userIdList.size()) {
             Set<Integer> originUserIdSet = Sets.newHashSet(originUserIdList);
             Set<Integer> userIdSet = Sets.newHashSet(userIdList);
@@ -67,6 +70,7 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
             }
         }
         updateRoleUsers(roleId, userIdList);
+        sysLogService.saveRoleUserLog(roleId, originUserIdList, userIdList);
     }
 
     @Transactional(rollbackFor = Exception.class)

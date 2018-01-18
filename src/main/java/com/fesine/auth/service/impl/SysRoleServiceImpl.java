@@ -8,6 +8,7 @@ import com.fesine.auth.po.SysRoleAclPo;
 import com.fesine.auth.po.SysRolePo;
 import com.fesine.auth.po.SysRoleUserPo;
 import com.fesine.auth.po.SysUserPo;
+import com.fesine.auth.service.SysLogService;
 import com.fesine.auth.service.SysRoleService;
 import com.fesine.auth.util.BeanValidator;
 import com.fesine.auth.util.IpUtil;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 public class SysRoleServiceImpl implements SysRoleService {
     @Autowired
     private IDaoService daoService;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public void save(RoleParam param) {
@@ -49,6 +52,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         sysRolePo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysRolePo.setOperateTime(new Date());
         daoService.insert(sysRolePo);
+        sysLogService.saveRoleLog(null,sysRolePo);
     }
 
     @Override
@@ -67,6 +71,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         sysRolePo.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysRolePo.setOperateTime(new Date());
         daoService.update(sysRolePo);
+        sysLogService.saveRoleLog(before,sysRolePo);
 
     }
 
@@ -98,6 +103,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         //执行删除
         sysRolePo = SysRolePo.builder().id(id).build();
         daoService.delete(sysRolePo);
+        sysLogService.saveRoleLog(sysRolePo,null);
     }
 
     @Override
