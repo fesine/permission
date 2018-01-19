@@ -8,6 +8,7 @@
 </head>
 
 <body class="no-skin">
+
 <div id="navbar" class="navbar navbar-default">
     <div class="navbar-container">
         <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
@@ -18,7 +19,7 @@
         </button>
 
         <div class="navbar-header pull-left">
-            <a href="/admin/page.do" class="navbar-brand">
+            <a href="/admin/index.page" class="navbar-brand">
                 <small>
                     <i class="fa fa-leaf"></i>
                     管理员控制台
@@ -31,7 +32,7 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">
                         <span class="user-info">
                             <small>欢迎,</small>
-                            Admin
+                            ${sessionScope.user.username }
                         </span>
                         <i class="ace-icon fa fa-caret-down"></i>
                     </a>
